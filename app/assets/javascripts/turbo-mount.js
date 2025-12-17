@@ -17,13 +17,13 @@ class TurboMountController extends Controller {
             return;
         }
         this.umountComponent();
-        this._umountComponentCallback || (this._umountComponentCallback = this.mountComponent(this.mountElement, this.resolvedComponent, this.componentProps));
+        this._umountComponentCallback || (this._umountComponentCallback = this.mountComponent(this. mountElement, this.resolvedComponent, this.componentProps));
     }
     get componentProps() {
         return this.propsValue;
     }
     get mountElement() {
-        return this.hasMountTarget ? this.mountTarget : this.element;
+        return this. hasMountTarget ? this.mountTarget : this.element;
     }
     get resolvedComponent() {
         return this.resolveMounted(this.componentValue).component;
@@ -47,7 +47,7 @@ class TurboMountController extends Controller {
         this.propsValue = props;
     }
 }
-TurboMountController.values = {
+TurboMountController. values = {
     props: Object,
     component: String,
 };
@@ -78,15 +78,26 @@ const getShortNameForIndexComponent = (componentName) => {
 class TurboMount {
     constructor(props = {}) {
         this.components = new Map();
-        this.application = this.findOrStartApplication(props.application);
+        this.application = this. findOrStartApplication(props.application);
         this.application.turboMount = this;
         this.application.register("turbo-mount", TurboMountController);
         document.addEventListener("turbo:before-morph-element", (event) => {
             const turboMorphEvent = event;
             const { target, detail } = turboMorphEvent;
-            if (target.getAttribute("data-controller")?.includes("turbo-mount")) {
-                target.setAttribute("data-turbo-mount-props-value", detail.newElement.getAttribute("data-turbo-mount-props-value") ||
-                    "{}");
+            const controllerAttr = target.getAttribute("data-controller");
+            if (controllerAttr?.includes("turbo-mount")) {
+                // Extract the specific turbo-mount controller name
+                const turboMountControllers = controllerAttr
+                    .split(/\s+/)
+                    . filter(name => name.startsWith("turbo-mount"));
+                
+                for (const controllerName of turboMountControllers) {
+                    // Generate the props attribute name based on the controller name
+                    const propsAttrName = `data-${controllerName}-props-value`;
+                    const newPropsValue = detail.newElement.getAttribute(propsAttrName) || "{}";
+                    target.setAttribute(propsAttrName, newPropsValue);
+                }
+                
                 event.preventDefault();
             }
         });
@@ -113,7 +124,7 @@ class TurboMount {
         let application = hydratedApp || window.Stimulus;
         if (!application) {
             application = Application.start();
-            window.Stimulus = application;
+            window. Stimulus = application;
         }
         return application;
     }
@@ -133,7 +144,7 @@ const registerComponentsBase = ({ plugin, turboMount, components, controllers = 
         registerSingleComponent({
             plugin,
             turboMount,
-            availableControllers: controllers,
+            availableControllers:  controllers,
             componentName,
             component,
         });
